@@ -6,6 +6,7 @@ urlpatterns = [
 
     path('courses/', views.CourseListView.as_view(), name='course_list'),
     path('courses/add/', views.CourseCreateView.as_view(), name='course_add'),
+    path('courses/<int:pk>/', views.CourseDetailView.as_view(), name='course_detail'),
     path('courses/<int:pk>/edit/', views.CourseUpdateView.as_view(), name='course_edit'),
     path('courses/<int:pk>/delete/', views.CourseDeleteView.as_view(), name='course_delete'),
 
@@ -14,7 +15,7 @@ urlpatterns = [
     path('tasks/<int:pk>/', views.TaskDetailView.as_view(), name='task_detail'),
     path('tasks/<int:pk>/edit/', views.TaskUpdateView.as_view(), name='task_edit'),
     path('tasks/<int:pk>/delete/', views.TaskDeleteView.as_view(), name='task_delete'),
-    path('tasks/<int:pk>/toggle/', views.TaskToggleStatusView.as_view(), name='task_toggle'),
+    path('tasks/<int:pk>/status/', views.TaskStatusUpdateView.as_view(), name='task_status'),
 
     path('reminders/', views.ReminderListView.as_view(), name='reminder_list'),
     path('reminders/add/', views.ReminderCreateView.as_view(), name='reminder_add'),

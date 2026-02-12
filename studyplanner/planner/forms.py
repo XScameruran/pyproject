@@ -6,6 +6,20 @@ from .models import Course, Task, Reminder, StudyEvent
 DT_FORMAT = '%Y-%m-%dT%H:%M'
 
 
+def apply_field_classes(fields):
+    for field in fields.values():
+        widget = field.widget
+        if isinstance(widget, forms.CheckboxInput):
+            class_name = 'form-check-input'
+        elif isinstance(widget, (forms.Select, forms.SelectMultiple)):
+            class_name = 'form-select'
+        else:
+            class_name = 'form-control'
+        existing = widget.attrs.get('class', '')
+        if class_name not in existing:
+            widget.attrs['class'] = f"{existing} {class_name}".strip()
+
+
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
@@ -13,6 +27,10 @@ class CourseForm(forms.ModelForm):
         widgets = {
             'color': forms.TextInput(attrs={'placeholder': '#RRGGBB'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        apply_field_classes(self.fields)
 
 
 class TaskForm(forms.ModelForm):
@@ -26,6 +44,7 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        apply_field_classes(self.fields)
         self.fields['deadline'].input_formats = [DT_FORMAT]
         if self.user:
             self.fields['course'].queryset = Course.objects.filter(owner=self.user)
@@ -59,6 +78,7 @@ class ReminderForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        apply_field_classes(self.fields)
         self.fields['remind_at'].input_formats = [DT_FORMAT]
         if self.user:
             self.fields['task'].queryset = Task.objects.filter(owner=self.user)
@@ -75,6 +95,7 @@ class StudyEventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        apply_field_classes(self.fields)
         self.fields['start_at'].input_formats = [DT_FORMAT]
         self.fields['end_at'].input_formats = [DT_FORMAT]
 

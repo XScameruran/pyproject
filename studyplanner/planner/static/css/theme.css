@@ -1,9 +1,38 @@
 ﻿:root {
-    --sp-bg: #0F1115;
+    --bg-color: #ffffff;
+    --text-color: #111111;
+    --header-bg: #f5f5f5;
+    --link-color: #000000;
+    --input-bg: #ffffff;
+    --input-bg-focus: #f0f2f6;
+    --input-placeholder: rgba(17, 17, 17, 0.5);
+    --sp-bg: var(--bg-color);
+    --sp-surface: #f8f9fb;
+    --sp-surface-hover: #f0f2f6;
+    --sp-border: rgba(17,17,17,0.08);
+    --sp-text: var(--text-color);
+    --sp-muted: #6b7280;
+    --sp-accent: #2563eb;
+    --sp-accent-hover: #1d4ed8;
+    --sp-todo: #64748B;
+    --sp-doing: #F59E0B;
+    --sp-done: #16a34a;
+    --sp-overdue: #dc2626;
+}
+
+[data-theme="dark"] {
+    --bg-color: #111111;
+    --text-color: #f5f7fa;
+    --header-bg: #222222;
+    --link-color: #ffffff;
+    --input-bg: #1b1f27;
+    --input-bg-focus: #202636;
+    --input-placeholder: rgba(245, 247, 250, 0.6);
+    --sp-bg: var(--bg-color);
     --sp-surface: #151922;
     --sp-surface-hover: #1C2230;
     --sp-border: rgba(255,255,255,0.06);
-    --sp-text: #E5E7EB;
+    --sp-text: var(--text-color);
     --sp-muted: #9CA3AF;
     --sp-accent: #5D8CFF;
     --sp-accent-hover: #7AA3FF;
@@ -18,8 +47,9 @@
 }
 
 body {
-    background: radial-gradient(circle at top right, rgba(93,140,255,0.08), transparent 45%), var(--sp-bg);
-    color: var(--sp-text);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
     font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
@@ -28,28 +58,46 @@ label {
 }
 
 input::placeholder,
-textarea::placeholder {
-    color: rgba(156, 163, 175, 0.7);
+textarea::placeholder,
+.form-control::placeholder {
+    color: var(--input-placeholder);
+    opacity: 1;
 }
 
 a {
-    color: var(--sp-accent);
+    color: var(--link-color);
     text-decoration: none;
 }
 
 a:hover {
-    color: var(--sp-accent-hover);
+    color: var(--link-color);
+}
+
+header {
+    background-color: var(--header-bg);
 }
 
 .navbar {
     min-height: 64px;
     border-bottom: 1px solid var(--sp-border);
-    background-color: rgba(15, 17, 21, 0.96);
+    background-color: var(--header-bg);
     backdrop-filter: blur(8px);
 }
 
 .navbar .nav-link {
     color: var(--sp-muted);
+}
+
+.navbar .navbar-brand {
+    color: var(--text-color);
+}
+
+.navbar .navbar-brand img {
+    display: block;
+}
+
+.navbar .navbar-brand:hover {
+    color: var(--text-color);
 }
 
 .navbar .nav-link:hover,
@@ -68,6 +116,15 @@ a:hover {
     padding: 20px;
     box-shadow: 0 10px 24px rgba(0,0,0,0.28);
     transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.sp-card-link {
+    display: block;
+    color: inherit;
+}
+
+.sp-card-link:hover {
+    color: inherit;
 }
 
 .sp-card:hover {
@@ -168,9 +225,9 @@ a:hover {
 .form-control,
 .form-select,
 textarea {
-    background: var(--sp-surface);
+    background: var(--input-bg);
     border: 1px solid var(--sp-border);
-    color: var(--sp-text);
+    color: var(--text-color);
 }
 
 .form-control:focus,
@@ -178,12 +235,38 @@ textarea {
 textarea:focus {
     border-color: var(--sp-accent);
     box-shadow: 0 0 0 0.2rem rgba(93,140,255,0.25);
-    background: var(--sp-surface-hover);
+    background: var(--input-bg-focus);
     color: var(--sp-text);
 }
 
+.sp-form p {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.sp-form input,
+.sp-form select,
+.sp-form textarea {
+    width: 100%;
+}
+
+.sp-form textarea {
+    min-height: 140px;
+}
+
+.sp-inline-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
 .table {
-    color: var(--sp-text);
+    color: var(--text-color);
+    --bs-table-color: var(--text-color);
+    --bs-table-hover-color: var(--text-color);
 }
 
 .table > :not(caption) > * > * {
@@ -229,6 +312,7 @@ textarea:focus {
 .sp-stat-number {
     font-size: 28px;
     font-weight: 700;
+    color: var(--text-color);
 }
 
 .sp-task-card {
@@ -305,4 +389,7 @@ textarea:focus {
 .sp-alert.neutral {
     background: rgba(100, 116, 139, 0.12);
     color: var(--sp-muted);
+}
+.navbar-brand{
+    color: var(--text-color);
 }

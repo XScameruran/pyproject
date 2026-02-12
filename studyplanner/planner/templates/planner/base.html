@@ -1,5 +1,5 @@
 ﻿{% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
@@ -9,33 +9,42 @@
     <link rel="stylesheet" href="{% static 'css/theme.css' %}">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg fixed-top navbar-dark">
-    <div class="container sp-container">
-        <a class="navbar-brand text-light fw-semibold" href="{% url 'dashboard' %}">StudyPlanner</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navMain">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'task_list' %}">Tasks</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'calendar_week' %}">Calendar</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'stats' %}">Stats</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'course_list' %}">Courses</a></li>
-            </ul>
+<header>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+        <div class="container sp-container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-semibold" href="{% url 'dashboard' %}">
+                <img src="{% static 'img/realogo.png' %}" alt="StudyPlanner logo" height="28">
+                <span>StudyPlanner</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'task_list' %}">Tasks</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'calendar_week' %}">Calendar</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'stats' %}">Stats</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'course_list' %}">Courses</a></li>
+                </ul>
             <div class="d-flex gap-2 align-items-center">
+                <button id="theme-toggle" class="btn btn-outline-secondary btn-sm" type="button" aria-label="Toggle theme"></button>
                 {% if user.is_authenticated %}
                     <span class="sp-muted small">{{ user.username }}</span>
-                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'logout' %}">Logout</a>
-                    <a class="btn btn-primary btn-sm" href="{% url 'task_add' %}">+ Add task</a>
-                {% else %}
-                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'login' %}">Login</a>
-                    <a class="btn btn-primary btn-sm" href="{% url 'signup' %}">Sign up</a>
-                {% endif %}
+                    <form method="post" action="{% url 'logout' %}" class="d-inline-flex align-items-center mb-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+                        </form>
+                        <a class="btn btn-primary btn-sm" href="{% url 'task_add' %}">+ Add task</a>
+                    {% else %}
+                        <a class="btn btn-outline-secondary btn-sm" href="{% url 'login' %}">Login</a>
+                        <a class="btn btn-primary btn-sm" href="{% url 'signup' %}">Sign up</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
+</header>
 
 <main class="container sp-container" style="padding-top: 96px; padding-bottom: 40px;">
     {% if messages %}
@@ -47,5 +56,6 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/theme.js' %}"></script>
 </body>
 </html>

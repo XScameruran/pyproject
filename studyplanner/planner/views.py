@@ -98,11 +98,13 @@ class CourseCreateView(LoginRequiredMixin, generic.CreateView):
     model = Course
     form_class = CourseForm
     template_name = 'planner/course_form.html'
-    success_url = reverse_lazy('course_list')
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('course_detail', kwargs={'pk': self.object.pk})
 
 
 class CourseUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -122,6 +124,21 @@ class CourseDeleteView(LoginRequiredMixin, generic.DeleteView):
 
     def get_queryset(self):
         return Course.objects.filter(owner=self.request.user)
+
+
+class CourseDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Course
+    template_name = 'planner/course_detail.html'
+    context_object_name = 'course'
+
+    def get_queryset(self):
+        return Course.objects.filter(owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tasks'] = Task.objects.filter(owner=self.request.user, course=self.object)
+        context['now'] = timezone.now()
+        return context
 
 
 class TaskListView(LoginRequiredMixin, generic.ListView):
@@ -243,7 +260,18 @@ class TaskCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
+        course_id = self.request.GET.get('course')
+        if course_id:
+            return reverse('course_detail', kwargs={'pk': course_id})
         return reverse('task_list')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        course_id = self.request.GET.get('course')
+        if course_id:
+            course = get_object_or_404(Course, pk=course_id, owner=self.request.user)
+            initial['course'] = course
+        return initial
 
 
 class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -272,15 +300,14 @@ class TaskDeleteView(LoginRequiredMixin, generic.DeleteView):
         return Task.objects.filter(owner=self.request.user)
 
 
-class TaskToggleStatusView(LoginRequiredMixin, generic.View):
+class TaskStatusUpdateView(LoginRequiredMixin, generic.View):
     def post(self, request, pk):
         task = get_object_or_404(Task, pk=pk, owner=request.user)
-        if task.status == Task.Status.TODO:
-            task.status = Task.Status.DOING
-        elif task.status == Task.Status.DOING:
-            task.status = Task.Status.DONE
-        task.save()
-        return redirect(request.META.get('HTTP_REFERER', reverse('task_list')))
+        status = request.POST.get('status')
+        if status in Task.Status.values:
+            task.status = status
+            task.save()
+        return redirect(request.META.get('HTTP_REFERER', reverse('task_detail', kwargs={'pk': pk})))
 
 
 class ReminderListView(LoginRequiredMixin, generic.ListView):

@@ -12,21 +12,17 @@
 <div class="row g-3">
     {% for course in courses %}
         <div class="col-md-6">
-            <div class="sp-card">
+            <a class="sp-card sp-card-link" href="{% url 'course_detail' course.id %}">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <div class="sp-title">{{ course.name }}</div>
+                        <div class="sp-title fw-semibold">{{ course.name }}</div>
                         <div class="sp-muted">{{ course.teacher|default:'Преподаватель не указан' }}</div>
                     </div>
                     {% if course.color %}
                         <span class="sp-dot" style="background: {{ course.color }}"></span>
                     {% endif %}
                 </div>
-                <div class="d-flex gap-2 mt-3">
-                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'course_edit' course.id %}">Edit</a>
-                    <a class="btn btn-outline-danger btn-sm" href="{% url 'course_delete' course.id %}">Delete</a>
-                </div>
-            </div>
+            </a>
         </div>
     {% empty %}
         <div class="col-12">

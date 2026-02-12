@@ -3,7 +3,7 @@
 {% block content %}
 <h1 class="sp-section-title mb-3">{% if form.instance.pk %}Edit task{% else %}New task{% endif %}</h1>
 
-<form method="post" class="sp-card">
+<form method="post" class="sp-card sp-form">
     {% csrf_token %}
     {{ form.as_p }}
     <div class="d-flex gap-2">

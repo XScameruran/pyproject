@@ -36,10 +36,15 @@
                 <div><span class="sp-muted">Created:</span> {{ task.created_at|date:'d.m.Y H:i' }}</div>
                 <div><span class="sp-muted">Completed:</span> {{ task.completed_at|date:'d.m.Y H:i'|default:'-' }}</div>
             </div>
-            <div class="d-flex gap-2 mt-3">
-                <form method="post" action="{% url 'task_toggle' task.id %}">
+            <div class="d-flex gap-2 mt-3 align-items-center">
+                <form method="post" action="{% url 'task_status' task.id %}" class="sp-inline-form">
                     {% csrf_token %}
-                    <button class="btn btn-outline-secondary btn-sm" type="submit">Toggle status</button>
+                    <select class="form-select form-select-sm" name="status" aria-label="Task status">
+                        {% for value,label in task.Status.choices %}
+                            <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-outline-secondary btn-sm" type="submit">Save</button>
                 </form>
             </div>
         </div>
