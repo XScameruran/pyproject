@@ -1,0 +1,55 @@
+﻿{% extends 'planner/base.html' %}
+{% load extra_tags %}
+{% block title %}Calendar | StudyPlanner{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="sp-section-title">Calendar</h1>
+        <div class="sp-muted">Weekly view</div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'calendar_week' %}?week={{ prev_week }}">Prev</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'calendar_week' %}?week={{ next_week }}">Next</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'event_add' %}">+ Add event</a>
+    </div>
+</div>
+
+<div class="sp-card p-0">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                {% for day in days %}
+                    <th class="sp-muted">{{ day|date:'D, d.m' }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for day in days %}
+                    <td class="align-top">
+                        {% with events=grouped_events|get_item:day %}
+                            {% if events %}
+                                <div class="d-grid gap-2">
+                                    {% for event in events %}
+                                        <div class="sp-event-pill">
+                                            <div class="fw-semibold">{{ event.title }}</div>
+                                            <div class="sp-muted small">{{ event.start_at|date:'H:i' }}{% if event.end_at %} - {{ event.end_at|date:'H:i' }}{% endif %}</div>
+                                            <div class="sp-muted small">{{ event.location|default:'' }}</div>
+                                            <div class="d-flex gap-2 mt-2">
+                                                <a class="btn btn-outline-secondary btn-sm" href="{% url 'event_edit' event.id %}">Edit</a>
+                                                <a class="btn btn-outline-danger btn-sm" href="{% url 'event_delete' event.id %}">Delete</a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="sp-muted small">Нет событий</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

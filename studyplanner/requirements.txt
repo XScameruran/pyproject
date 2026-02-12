@@ -1,0 +1,2 @@
+﻿Django>=5.0,<6.0
+django-jazzmin>=3.0.0

@@ -1,0 +1,95 @@
+﻿{% extends 'planner/base.html' %}
+{% block title %}Dashboard | StudyPlanner{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="sp-section-title">Dashboard</h1>
+            <div class="sp-muted">Общий обзор задач и динамики на сегодня.</div>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'calendar_week' %}">Calendar</a>
+            <a class="btn btn-outline-secondary btn-sm" href="{% url 'stats' %}">Stats</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="sp-card">
+            <div class="sp-card-header">
+                <div class="sp-title">Tasks Today</div>
+                <div class="sp-stat-number">{{ tasks_today|length }}</div>
+            </div>
+            <div class="sp-muted mb-2">Ближайшие задачи на сегодня</div>
+            <div class="d-grid gap-2">
+                {% for task in tasks_today|slice:":5" %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'task_detail' task.id %}">{{ task.title }}</a>
+                        <span class="sp-muted">{{ task.deadline|date:'H:i' }}</span>
+                    </div>
+                {% empty %}
+                    <div class="sp-muted">Нет задач на сегодня.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="sp-card sp-overdue-border">
+            <div class="sp-card-header">
+                <div class="sp-title">Overdue</div>
+                <div class="sp-stat-number">{{ tasks_overdue|length }}</div>
+            </div>
+            <div class="sp-muted mb-2">Просроченные задачи</div>
+            <div class="d-grid gap-2">
+                {% for task in tasks_overdue|slice:":5" %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'task_detail' task.id %}">{{ task.title }}</a>
+                        <span class="sp-badge overdue">OVERDUE</span>
+                    </div>
+                {% empty %}
+                    <div class="sp-muted">Нет просрочек.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="sp-card">
+            <div class="sp-card-header">
+                <div class="sp-title">Next 7 Days</div>
+                <div class="sp-stat-number">{{ tasks_next_7|length }}</div>
+            </div>
+            <div class="sp-muted mb-2">Задачи на ближайшую неделю</div>
+            <div class="d-grid gap-2">
+                {% for task in tasks_next_7|slice:":5" %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'task_detail' task.id %}">{{ task.title }}</a>
+                        <span class="sp-muted">{{ task.deadline|date:'d.m' }}</span>
+                    </div>
+                {% empty %}
+                    <div class="sp-muted">Нет задач в ближайшие 7 дней.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="sp-card">
+            <div class="sp-card-header">
+                <div class="sp-title">Productivity</div>
+            </div>
+            <div class="row text-center">
+                <div class="col-6">
+                    <div class="sp-stat-number">{{ done_last_7 }}</div>
+                    <div class="sp-muted">Done (7d)</div>
+                </div>
+                <div class="col-6">
+                    <div class="sp-stat-number">{{ streak }}</div>
+                    <div class="sp-muted">Streak (days)</div>
+                </div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-muted">Открой статистику для детальной динамики.</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+﻿{% extends 'planner/base.html' %}
+{% block title %}{{ task.title }} | StudyPlanner{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="sp-section-title">{{ task.title }}</h1>
+        <div class="sp-kv">
+            {% if task.status == 'TODO' %}
+                <span class="sp-badge todo">TODO</span>
+            {% elif task.status == 'DOING' %}
+                <span class="sp-badge doing">DOING</span>
+            {% else %}
+                <span class="sp-badge done">DONE</span>
+            {% endif %}
+            {% if task.deadline and task.deadline < now and task.status != 'DONE' %}
+                <span class="sp-badge overdue">OVERDUE</span>
+            {% endif %}
+            <span class="sp-muted">{{ task.course|default:'Без курса' }}</span>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'task_edit' task.id %}">Edit</a>
+        <a class="btn btn-outline-danger btn-sm" href="{% url 'task_delete' task.id %}">Delete</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="sp-card mb-3">
+            <div class="sp-title mb-2">Details</div>
+            <div class="sp-muted mb-3">{{ task.description|default:'Описание отсутствует.' }}</div>
+            <div class="sp-kv">
+                <div><span class="sp-muted">Deadline:</span> {{ task.deadline|date:'d.m.Y H:i'|default:'Нет' }}</div>
+                <div><span class="sp-muted">Priority:</span> {{ task.priority }}</div>
+                <div><span class="sp-muted">Estimated:</span> {{ task.estimated_minutes }} мин</div>
+                <div><span class="sp-muted">Created:</span> {{ task.created_at|date:'d.m.Y H:i' }}</div>
+                <div><span class="sp-muted">Completed:</span> {{ task.completed_at|date:'d.m.Y H:i'|default:'-' }}</div>
+            </div>
+            <div class="d-flex gap-2 mt-3">
+                <form method="post" action="{% url 'task_toggle' task.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-secondary btn-sm" type="submit">Toggle status</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="sp-card mb-3">
+            <div class="sp-title mb-2">Прогноз</div>
+            {% if forecast.status == 'no_deadline' %}
+                <div class="sp-alert neutral">Нет дедлайна, прогноз недоступен.</div>
+            {% elif forecast.status == 'deadline_passed' %}
+                <div class="sp-alert danger">Дедлайн уже прошёл.</div>
+            {% elif forecast.status == 'no_data' %}
+                <div class="sp-alert neutral">Недостаточно данных для расчёта.</div>
+            {% else %}
+                <div class="sp-muted mb-2">
+                    Осталось {{ forecast.remaining_minutes }} минут,
+                    дней до дедлайна: {{ forecast.days_left }},
+                    средняя пропускная способность: {{ forecast.capacity_per_day|floatformat:0 }} мин/день.
+                </div>
+                {% if forecast.status == 'ok' %}
+                    <div class="sp-alert success">Успеешь</div>
+                {% else %}
+                    <div class="sp-alert danger">Не успеешь</div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="sp-card">
+            <div class="sp-title mb-2">Напоминания</div>
+            {% if task.reminders.all %}
+                <div class="d-grid gap-2">
+                    {% for reminder in task.reminders.all %}
+                        <div class="d-flex justify-content-between">
+                            <span>{{ reminder.remind_at|date:'d.m.Y H:i' }}</span>
+                            <span class="sp-muted">{% if reminder.is_sent %}Отправлено{% else %}Ожидает{% endif %}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="sp-muted">Напоминаний нет.</div>
+            {% endif %}
+            <a class="btn btn-outline-secondary btn-sm mt-3" href="{% url 'reminder_add' %}">Add reminder</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

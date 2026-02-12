@@ -1,0 +1,37 @@
+﻿{% extends 'planner/base.html' %}
+{% block title %}Login | StudyPlanner{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="sp-card">
+            <h1 class="sp-section-title mb-2">Login</h1>
+            <div class="sp-muted mb-3">Войдите, чтобы продолжить.</div>
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="sp-alert danger mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label class="form-label" for="id_username">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="id_password">Password</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Login</button>
+            </form>
+            <div class="sp-divider"></div>
+            <div class="sp-muted">Нет аккаунта? <a href="{% url 'signup' %}">Зарегистрироваться</a></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

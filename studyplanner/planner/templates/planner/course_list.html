@@ -1,0 +1,39 @@
+﻿{% extends 'planner/base.html' %}
+{% block title %}Courses | StudyPlanner{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="sp-section-title">Courses</h1>
+        <div class="sp-muted">Управление учебными курсами</div>
+    </div>
+    <a class="btn btn-primary" href="{% url 'course_add' %}">+ Add course</a>
+</div>
+
+<div class="row g-3">
+    {% for course in courses %}
+        <div class="col-md-6">
+            <div class="sp-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="sp-title">{{ course.name }}</div>
+                        <div class="sp-muted">{{ course.teacher|default:'Преподаватель не указан' }}</div>
+                    </div>
+                    {% if course.color %}
+                        <span class="sp-dot" style="background: {{ course.color }}"></span>
+                    {% endif %}
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a class="btn btn-outline-secondary btn-sm" href="{% url 'course_edit' course.id %}">Edit</a>
+                    <a class="btn btn-outline-danger btn-sm" href="{% url 'course_delete' course.id %}">Delete</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="sp-card">
+                <div class="sp-muted">Курсов нет.</div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

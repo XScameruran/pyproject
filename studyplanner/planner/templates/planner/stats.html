@@ -1,0 +1,56 @@
+﻿{% extends 'planner/base.html' %}
+{% block title %}Stats | StudyPlanner{% endblock %}
+{% block content %}
+<h1 class="sp-section-title mb-3">Stats</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="sp-card">
+            <div class="sp-muted">Total tasks</div>
+            <div class="sp-stat-number">{{ total_tasks }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="sp-card">
+            <div class="sp-muted">Completed</div>
+            <div class="sp-stat-number">{{ total_done }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="sp-card">
+            <div class="sp-muted">Completion 7d</div>
+            <div class="sp-stat-number">{{ completion_7 }}%</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="sp-card">
+            <div class="sp-muted">Streak</div>
+            <div class="sp-stat-number">{{ streak }} days</div>
+        </div>
+    </div>
+</div>
+
+<div class="sp-card p-0">
+    <div class="p-3 border-bottom" style="border-color: var(--sp-border)">Последние 14 дней</div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="sp-muted">Дата</th>
+                    <th class="sp-muted">Выполнено задач</th>
+                    <th class="sp-muted">Минут всего</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in daily %}
+                    <tr>
+                        <td>{{ row.day|date:'d.m.Y' }}</td>
+                        <td>{{ row.count }}</td>
+                        <td>{{ row.minutes }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

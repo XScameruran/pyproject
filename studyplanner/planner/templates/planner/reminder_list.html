@@ -1,0 +1,39 @@
+﻿{% extends 'planner/base.html' %}
+{% block title %}Reminders | StudyPlanner{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="sp-section-title">Reminders</h1>
+        <div class="sp-muted">Управление напоминаниями</div>
+    </div>
+    <a class="btn btn-primary" href="{% url 'reminder_add' %}">+ Add reminder</a>
+</div>
+
+<div class="sp-card p-0">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th class="sp-muted">Task</th>
+                <th class="sp-muted">When</th>
+                <th class="sp-muted">Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reminder in reminders %}
+                <tr>
+                    <td><a href="{% url 'task_detail' reminder.task.id %}">{{ reminder.task.title }}</a></td>
+                    <td>{{ reminder.remind_at|date:'d.m.Y H:i' }}</td>
+                    <td>{% if reminder.is_sent %}Sent{% else %}Pending{% endif %}</td>
+                    <td class="text-end">
+                        <a class="btn btn-outline-secondary btn-sm" href="{% url 'reminder_edit' reminder.id %}">Edit</a>
+                        <a class="btn btn-outline-danger btn-sm" href="{% url 'reminder_delete' reminder.id %}">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4" class="sp-muted">Напоминаний нет.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

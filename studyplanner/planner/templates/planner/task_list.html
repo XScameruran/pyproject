@@ -1,0 +1,120 @@
+﻿{% extends 'planner/base.html' %}
+{% load extra_tags %}
+{% block title %}Tasks | StudyPlanner{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="sp-section-title">Tasks</h1>
+        <div class="sp-muted">Управление задачами и статусами</div>
+    </div>
+    <a class="btn btn-primary" href="{% url 'task_add' %}">+ Add task</a>
+</div>
+
+<div class="sp-card mb-3">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-lg-4">
+            <input class="form-control" type="text" name="q" value="{{ request.GET.q }}" placeholder="Поиск по задачам">
+        </div>
+        <div class="col-lg-3">
+            <select class="form-select" name="status">
+                <option value="">Статус</option>
+                {% for value,label in tasks.model.Status.choices %}
+                    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-3">
+            <select class="form-select" name="course">
+                <option value="">Курс</option>
+                {% for course in courses %}
+                    <option value="{{ course.id }}" {% if request.GET.course == course.id|stringformat:'s' %}selected{% endif %}>{{ course.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-lg-2">
+            <button class="btn btn-outline-secondary w-100" type="submit">Apply</button>
+        </div>
+    </form>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        <a class="sp-pill {% if request.GET.deadline == 'today' %}active{% endif %}" href="?deadline=today">Today</a>
+        <a class="sp-pill {% if request.GET.deadline == 'week' %}active{% endif %}" href="?deadline=week">Week</a>
+        <a class="sp-pill {% if request.GET.deadline == 'overdue' %}active{% endif %}" href="?deadline=overdue">Overdue</a>
+        <a class="sp-pill {% if request.GET.deadline == 'all' or not request.GET.deadline %}active{% endif %}" href="?deadline=all">All</a>
+    </div>
+</div>
+
+<div class="d-grid gap-3">
+    {% for task in tasks %}
+        <div class="sp-task-card {% if task.deadline and task.deadline < now and task.status != 'DONE' %}sp-overdue-border{% endif %}">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <a class="fw-semibold" href="{% url 'task_detail' task.id %}">{{ task.title }}</a>
+                    <div class="sp-muted small">{{ task.course|default:'Без курса' }}</div>
+                </div>
+                <div class="text-end">
+                    {% if task.deadline and task.deadline < now and task.status != 'DONE' %}
+                        <span class="sp-badge overdue">OVERDUE</span>
+                    {% elif task.status == 'TODO' %}
+                        <span class="sp-badge todo">TODO</span>
+                    {% elif task.status == 'DOING' %}
+                        <span class="sp-badge doing">DOING</span>
+                    {% else %}
+                        <span class="sp-badge done">DONE</span>
+                    {% endif %}
+                    {% if task.deadline %}
+                        <div class="sp-muted small mt-1">{{ task.deadline|date:'d.m H:i' }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="d-flex justify-content-between flex-wrap">
+                <div class="sp-muted small">
+                    {{ task.description|default:''|truncatechars:120 }}
+                </div>
+                <div class="sp-kv">
+                    <div class="sp-muted small">{{ task.estimated_minutes }} мин</div>
+                    <div class="sp-priority">
+                        <span class="{% if task.priority >= 1 %}active{% endif %}"></span>
+                        <span class="{% if task.priority >= 2 %}active{% endif %}"></span>
+                        <span class="{% if task.priority >= 3 %}active{% endif %}"></span>
+                        <span class="{% if task.priority >= 4 %}active{% endif %}"></span>
+                        <span class="{% if task.priority >= 5 %}active{% endif %}"></span>
+                    </div>
+                    {% with reminder=nearest_reminders|get_item:task.id %}
+                        {% if reminder %}
+                            <div class="sp-muted small">Reminder: {{ reminder.remind_at|date:'d.m H:i' }}</div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3">
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'task_detail' task.id %}">View</a>
+                <a class="btn btn-outline-secondary btn-sm" href="{% url 'task_edit' task.id %}">Edit</a>
+                <form method="post" action="{% url 'task_toggle' task.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-secondary btn-sm" type="submit">Toggle status</button>
+                </form>
+            </div>
+        </div>
+    {% empty %}
+        <div class="sp-card">
+            <div class="sp-muted">Задач нет.</div>
+        </div>
+    {% endfor %}
+</div>
+
+<nav aria-label="Task pagination" class="mt-4">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Prev</span></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}
