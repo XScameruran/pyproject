@@ -25,7 +25,7 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = ['name', 'teacher', 'color']
         widgets = {
-            'color': forms.TextInput(attrs={'placeholder': '#RRGGBB'}),
+            'color': forms.TextInput(attrs={'type': 'color'}),
         }
 
     def __init__(self, *args, **kwargs):
